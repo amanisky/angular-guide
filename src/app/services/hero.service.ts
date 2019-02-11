@@ -63,8 +63,15 @@ export class HeroService {
       );
   }
 
+  /**
+   * 新增英雄
+   * @param hero Hero 类型的英雄对象
+   */
   addHero(hero: Hero): Observable<Hero> {
-
+    return this.http.post<Hero>(this.heroesUrl, hero, httpOptions).pipe(
+      tap((hero: Hero) => this.log(`added hero id=${hero.id}`)),
+      catchError(this.handleError<Hero>('addHero'))
+    );
   }
 
   /**
