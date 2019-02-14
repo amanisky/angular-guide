@@ -75,6 +75,35 @@ export class HeroService {
   }
 
   /**
+   * 删除英雄
+   * @param hero 英雄
+   */
+  deleteHero (hero: Hero | number): Observable<Hero> {
+    const id = typeof hero === 'number' ? hero : hero.id;
+    const url = `${this.heroesUrl}/${id}`;
+
+    return this.http.delete<Hero>(url, httpOptions).pipe(
+      tap(_ => this.log(`deleted hero id=${id}`)),
+      catchError(this.handleError<Hero>('deleteHero'))
+    );
+  }
+
+  /**
+   * 根据英雄名称搜索英雄
+   * @param term 英雄名称
+   */
+  searchHeroes(term: string): Observable<Hero[]> {
+    if (!term.trim()) {
+      // if not search term, return empty hero array.
+      return of([]);
+    }
+    return this.http.get<Hero[]>(`${this.heroesUrl}/?name=${term}`).pipe(
+      tap(_ => this.log(`found heroes matching "${term}"`)),
+      catchError(this.handleError<Hero[]>('searchHeroes', []))
+    );
+  }
+
+  /**
    * 处理失败的 Http 操作，让程序能正常运行
    * @param operation - 失败的操作名称
    * @param result - 作为可观察结果返回的可选值
