@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { MessageService } from './message.service';
 import { Hero } from '../models/hero';
 import { Observable, of } from 'rxjs';
@@ -93,11 +93,16 @@ export class HeroService {
    * @param term 英雄名称
    */
   searchHeroes(term: string): Observable<Hero[]> {
+    // 如果搜索关键词为空，该方法立即返回一个空数组
     if (!term.trim()) {
-      // if not search term, return empty hero array.
       return of([]);
     }
-    return this.http.get<Hero[]>(`${this.heroesUrl}/?name=${term}`).pipe(
+    // return this.http.get<Hero[]>(`${this.heroesUrl}/?name=${term}`).pipe(
+    //   tap(_ => this.log(`found heroes matching "${term}"`)),
+    //   catchError(this.handleError<Hero[]>('searchHeroes', []))
+    // );
+    const options = { params: new HttpParams().set('name', term) };
+    return this.http.get<Hero[]>(this.heroesUrl, options).pipe(
       tap(_ => this.log(`found heroes matching "${term}"`)),
       catchError(this.handleError<Hero[]>('searchHeroes', []))
     );
