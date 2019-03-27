@@ -31,15 +31,16 @@ export class HeroSearchComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    //  往 searchTerms 这个可观察对象的处理管道中加入了一系列 RxJS 操作符
     this.heroes$ = this.searchTerms.pipe(
-      // wait 300ms after each keystroke before considering the term
+      // 只有在特定的一段时间经过后并且没有发出另一个源值，才从源 Observable 中发出一个值
       debounceTime(300),
 
-      // ignore new term if same as previous term
+      // 返回 Observable，它发出源 Observable 发出的所有与前一项不相同的项
       distinctUntilChanged(),
 
-      // switch to new search observable each time the term changes
-      switchMap((term: string) => this.heroService.searchHeroes(term)),
+      // 将每个源值投射成 Observable，该 Observable 会合并到输出 Observable 中， 并且只发出最新投射的 Observable 中的值
+      switchMap((term: string) => this.heroService.searchHeroes(term))
     );
   }
 }
